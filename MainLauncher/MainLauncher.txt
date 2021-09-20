@@ -1,0 +1,101 @@
+Decompiled Main Entry from swarm.exe
+
+int entry(void)
+
+{
+  HANDLE pvVar1;
+  LPOSVERSIONINFOA lpVersionInformation;
+  BOOL BVar2;
+  int iVar3;
+  char *pcVar4;
+  uint uVar5;
+  DWORD DVar6;
+  SIZE_T dwBytes;
+  undefined local_74 [48];
+  ushort local_44;
+  DWORD local_2c;
+  DWORD local_28;
+  DWORD local_24;
+  int local_20;
+  undefined4 uStack12;
+  undefined4 local_8;
+  
+  ___security_init_cookie();
+  uStack12 = 0x4016dc;
+  local_8 = 0;
+  GetStartupInfoA((LPSTARTUPINFOA)local_74);
+  local_8 = 0xfffffffe;
+  dwBytes = 0x94;
+  DVar6 = 0;
+  pvVar1 = GetProcessHeap();
+  --> lpVersionInformation = (LPOSVERSIONINFOA)HeapAlloc(pvVar1,DVar6,dwBytes); <--
+  if (lpVersionInformation == (LPOSVERSIONINFOA)0x0) {
+    _fast_error_exit(0x12);
+  }
+  else {
+    --> lpVersionInformation->dwOSVersionInfoSize = 0x94; <--
+    BVar2 = GetVersionExA(lpVersionInformation);
+    DVar6 = 0;
+    if (BVar2 != 0) {
+      local_24 = lpVersionInformation->dwPlatformId;
+      local_28 = lpVersionInformation->dwMajorVersion;
+      local_2c = lpVersionInformation->dwMinorVersion;
+      uVar5 = lpVersionInformation->dwBuildNumber & 0x7fff;
+      pvVar1 = GetProcessHeap();
+      HeapFree(pvVar1,DVar6,lpVersionInformation);
+      if (local_24 != 2) {
+        uVar5 = uVar5 | 0x8000;
+      }
+      _DAT_0040f09c = local_28 * 0x100 + local_2c;
+      DAT_0040f094 = local_24;
+      DAT_0040f0a0 = local_28;
+      _DAT_0040f0a4 = local_2c;
+      _DAT_0040f098 = uVar5;
+      local_24 = _check_managed_app();
+      iVar3 = __heap_init();
+      if (iVar3 == 0) {
+        _fast_error_exit(0x1c);
+      }
+      iVar3 = __mtinit();
+      if (iVar3 == 0) {
+        _fast_error_exit(0x10);
+      }
+      __RTC_Initialize();
+      local_8 = 1;
+      iVar3 = __ioinit();
+      if (iVar3 < 0) {
+        __amsg_exit(0x1b);
+      }
+      DAT_00410c7c = GetCommandLineA();
+      DAT_0040f084 = ___crtGetEnvironmentStringsA();
+      iVar3 = __setargv();
+      if (iVar3 < 0) {
+        __amsg_exit(8);
+      }
+      iVar3 = __setenvp();
+      if (iVar3 < 0) {
+        __amsg_exit(9);
+      }
+      iVar3 = __cinit(1);
+      if (iVar3 != 0) {
+        __amsg_exit(iVar3);
+      }
+      pcVar4 = __wincmdln();
+      if ((local_74[44] & 1) == 0) {
+        uVar5 = 10;
+      }
+      else {
+        uVar5 = (uint)local_44;
+      }
+      local_20 = FUN_00401080((HMODULE)&IMAGE_DOS_HEADER_00400000,0,pcVar4,uVar5);
+      if (local_24 == 0) {
+        _exit(local_20);
+      }
+      __cexit();
+      return local_20;
+    }
+    pvVar1 = GetProcessHeap();
+    HeapFree(pvVar1,DVar6,lpVersionInformation);
+  }
+  return 0xff;
+}
