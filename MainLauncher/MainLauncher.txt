@@ -99,3 +99,60 @@ int entry(void)
   }
   return 0xff;
 }
+
+----------------
+
+
+/* WARNING: Function: __alloca_probe replaced with injection: alloca_probe */
+
+int FUN_00401080(HMODULE mainModule,int param_2,char *commandLine,int flags)
+
+{
+  char *pcVar1;
+  DWORD DVar2;
+  char *pcVar3;
+  HMODULE hModule;
+  FARPROC pFVar4;
+  int iVar5;
+  DWORD dwLanguageId;
+  HLOCAL *lpBuffer;
+  HMODULE Arguments;
+  HLOCAL local_1508;
+  CHAR local_1504 [260];
+  char local_1400 [1023];
+  undefined local_1001;
+  char local_1000 [4092];
+  uint uStack4;
+  
+  uStack4 = 0x40108a;
+  pcVar1 = _getenv("PATH");
+  DVar2 = GetModuleFileNameA(mainModule,local_1504,0x104);
+  if (DVar2 == 0) {
+    MessageBoxA((HWND)0x0,"Failed calling GetModuleFileName","Launcher Error",0);
+    return 0;
+  }
+  pcVar3 = FUN_00401000();
+  __snprintf(local_1000,0x1000,"PATH=%s\\bin\\;%s",pcVar3,pcVar1);
+  uStack4 = uStack4 & 0xffffff;
+  __putenv(local_1000);
+  __snprintf(local_1000,0x1000,"%s\\bin\\launcher.dll",pcVar3);
+  uStack4 = uStack4 & 0xffffff;
+  hModule = LoadLibraryExA(local_1000,(HANDLE)0x0,8);
+  if (hModule == (HMODULE)0x0) {
+    lpBuffer = &local_1508;
+    dwLanguageId = 0x400;
+    Arguments = hModule;
+    DVar2 = GetLastError();
+    FormatMessageA(0x1300,(LPCVOID)0x0,DVar2,dwLanguageId,(LPSTR)lpBuffer,(DWORD)hModule,
+                   (va_list *)Arguments);
+    __snprintf(local_1400,0x400,"Failed to load the launcher DLL:\n\n%s",local_1508);
+    local_1001 = 0;
+    MessageBoxA((HWND)0x0,local_1400,"Launcher Error",0);
+    LocalFree(local_1508);
+    return 0;
+  }
+  pFVar4 = GetProcAddress(hModule,"LauncherMain");
+  iVar5 = (*pFVar4)(mainModule,param_2,commandLine,flags);
+  return iVar5;
+}
+
